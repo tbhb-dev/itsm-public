@@ -1,0 +1,28 @@
+---
+default_stages: [pre-commit, pre-push]
+
+# The shared devtools hooks. The rev is pinned by SHA with a `# frozen:`
+# tag comment that devtools:check-pins reads. leaks-staged scans the index
+# blobs, so a private value cannot hide behind a cleaned working file.
+# leaks-pre-push only asserts that the install-pre-push wrapper sits in
+# front of prek's pre-push hook, because prek hides git's ref lines from
+# its hooks.
+#
+# Install with `mise run bootstrap`, which installs the toolchain and the
+# Vale styles, runs `devtools:prek-install` for the commit-msg, pre-commit,
+# pre-push, and post-commit stages, then runs
+# `devtools:install-pre-push-hook` for the wrapper in front of pre-push.
+
+repos:
+  - repo: https://github.com/tbhb-dev/devtools
+    rev: 830abe6dadce3e0b4c7ab4c5065560d2c3c76ed9  # frozen: v0.14.0
+    hooks:
+      - id: guard-markdown
+      - id: commit-trailers
+      - id: commitlint
+      - id: vale-commit-msg
+      - id: cspell-commit-msg
+      - id: clear-commit-agentmsg
+      - id: leaks-staged
+      - id: leaks-commit-msg
+      - id: leaks-pre-push

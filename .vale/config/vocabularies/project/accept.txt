@@ -1,0 +1,9 @@
+cspell
+devtools
+gitleaks
+mise
+prek
+ruleset
+shellcheck
+toolchain
+vendir

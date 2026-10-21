@@ -1,0 +1,9 @@
+.devtools/
+# Generated dependency locks from mise.
+.config/mise/
+.claude/
+.agents/skills/
+.codex/
+apm_modules/
+apm.lock.yaml
+vendir.lock.yml

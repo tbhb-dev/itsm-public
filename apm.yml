@@ -1,0 +1,9 @@
+---
+name: itsm-public
+version: 0.1.0
+description: Agent tooling for itsm-public
+targets: [claude, codex]
+dependencies:
+  apm:
+    - tbhb-dev/devtools#v0.14.0
+  mcp: []

@@ -1,0 +1,49 @@
+# Local development
+mise.local.toml
+
+# Agent commit-message draft. Authored at the repo root so vale's
+# [formats] mapping resolves it, linted via `mise run lint-commit-msg`,
+# then consumed with `git commit -F COMMIT_AGENTMSG`. Never committed.
+COMMIT_AGENTMSG
+
+# Agent pull request drafts, the same idea one stage later.
+# PR_AGENTDESC.md holds the description for as long as the pull request
+# stays open, and merge-pr removes it once the branch merges.
+# SQUASH_AGENTMSG holds the squash commit message that skill writes.
+PR_AGENTDESC.md
+SQUASH_AGENTMSG
+
+# The fix-prose skill keeps each run's baseline, original copy, and notes
+# inside the worktree.
+.fix-prose/
+
+# Linter caches
+.rumdl_cache/
+.cspell-cache
+
+# Claude Code and Codex
+.claude/worktrees/
+.claude/settings.local.json
+.codex/worktrees/
+.codex/settings.local.json
+.agents/worktrees/
+.agents/settings.local.json
+
+# Vale synced packages (keep the repo-local style and its vocabulary).
+# Each negation needs the parent un-ignored first; git can't re-include
+# a child whose ancestor directory stays excluded. The agent output
+# template ships in the ai-tells package and vale sync writes it under
+# .vale/config/templates/.
+.vale/*
+!.vale/project/
+!.vale/config/
+.vale/config/*
+!.vale/config/vocabularies/
+.vale/config/vocabularies/*
+!.vale/config/vocabularies/project/
+
+# macOS
+.DS_Store
+
+# APM dependencies
+apm_modules/

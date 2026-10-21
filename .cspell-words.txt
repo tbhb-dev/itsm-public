@@ -1,0 +1,16 @@
+AGENTDESC
+AGENTMSG
+agentrepo
+cspell
+itsm
+lockfiles
+mise
+preapproval
+prek
+rumdl
+shellcheck
+shfmt
+tbhb
+tmpl
+tombi
+vendir

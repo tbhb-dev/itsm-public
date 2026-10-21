@@ -1,0 +1,115 @@
+# itsm-public toolchain and tasks.
+
+[settings]
+lockfile = true
+idiomatic_version_file_enable_tools = []
+
+[tools]
+vendir = "0.46.2"
+apm = "0.33.0"
+uv = "0.13.0"
+jq = "1.8.2"
+shfmt = "3.14.1"
+"go:github.com/tbhb-dev/devtools/cmd/guard-markdown" = "v0.14.0"
+"go:github.com/tbhb-dev/devtools/cmd/commit-lint" = "v0.14.0"
+"go:github.com/tbhb-dev/devtools/cmd/agentrepo" = "v0.14.0"
+
+[env]
+DEVTOOLS_LOCK_PLATFORMS = "linux-x64,macos-arm64"
+DEVTOOLS_PROSE_GLOB = "*.md"
+DEVTOOLS_GENERATED_PATHS = ".devtools/\n.config/mise/\n.vale/"
+
+[task_config]
+includes = [
+  ".devtools/tasks/apm.toml",
+  ".devtools/tasks/git-hooks.toml",
+  ".devtools/tasks/leaks.toml",
+  ".devtools/tasks/lint.toml",
+  ".devtools/tasks/pins.toml",
+  ".devtools/tasks/preapproval.toml",
+  ".devtools/tasks/security.toml",
+  ".devtools/tasks/toolchain.toml",
+  ".devtools/tasks/vendir.toml",
+]
+
+[tasks.bootstrap]
+description = "Install the toolchain and Vale styles, then install the git hooks"
+alias = "setup"
+run = [
+  "mise run install-toolchain",
+  "mise run install-tools",
+  "mise run devtools:prek-install",
+  "mise run devtools:install-pre-push-hook",
+]
+
+[tasks.install-toolchain]
+description = "Install the pinned toolchain from mise.toml and the vendored conf.d"
+run = "mise install"
+
+[tasks.install-tools]
+description = "Download the Vale style packages .vale.ini names"
+run = "vale sync"
+
+[tasks.install-guard-markdown]
+description = "Install the Markdown guard declared in mise.toml"
+run = "mise install"
+
+[tasks.lint-commit-msg]
+extends = "devtools:lint-commit-msg"
+
+[tasks.lint-squash-msg]
+extends = "devtools:lint-squash-msg"
+
+[tasks.lint-prose]
+extends = "devtools:lint-prose"
+
+[tasks.lint-draft]
+extends = "devtools:lint-draft"
+
+[tasks.fix-prose-replacements]
+extends = "devtools:fix-prose-replacements"
+
+[tasks.lint-pr-description]
+extends = "devtools:lint-pr-description"
+run = [
+  "bash .claude/skills/pr/scripts/validate-description.sh",
+  "vale --output=ai-tells-agent.tmpl PR_AGENTDESC.md",
+  "cspell --config .cspell.jsonc --no-summary --no-progress PR_AGENTDESC.md",
+]
+
+[tasks.lint]
+extends = "devtools:lint"
+run = [
+  "mise run devtools:check-vendored",
+  "mise run devtools:check-pins",
+  "mise run devtools:check-toolchain",
+  "mise run devtools:lint-apm",
+  "mise run devtools:lint-leaks",
+  "mise run devtools:check-pre-push-hook",
+  "mise run lint-prose",
+  "mise run devtools:lint-spelling",
+  "mise run devtools:lint-markdown",
+  "mise run devtools:lint-markdown-wrap",
+  "mise run devtools:lint-config",
+  "mise run devtools:lint-yaml",
+  "mise run devtools:lint-toml",
+  "mise run devtools:lint-mise",
+  "mise run devtools:lint-workflows",
+  "mise run devtools:lint-shell",
+  "mise run devtools:lint-shell-fmt",
+  "mise run devtools:lint-curl",
+]
+
+# The operator skills commit and pr call `mise run test`, so the task exists
+# before any test suite does.
+[tasks.test]
+description = "Report that the repository has no test suite yet"
+run = "echo 'No project test suite exists yet; this repository contains documentation and configuration.'"
+
+[tasks.check]
+description = "Run lint and test"
+run = ["mise run lint", "mise run test"]
+
+[tasks.check-all]
+description = "Run check, then scan the full history for secrets"
+run = ["mise run check", "mise run devtools:gitleaks"]
