@@ -1,0 +1,86 @@
+---
+# Quality gates: the shared lint workflow, a local test job, and a scan of
+# the pull request's commits for private identifiers. The credential scan
+# lives in security.yml. Each local job installs the pinned toolchain
+# through mise and runs its gate through `mise run`, so the mise config
+# stays the single definition of what each gate runs.
+
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  lint:
+    uses: tbhb-dev/devtools/.github/workflows/consumer-lint.yml@830abe6dadce3e0b4c7ab4c5065560d2c3c76ed9 # v0.14.0
+
+  test:
+    name: test
+    runs-on: ubuntu-24.04
+    env:
+      MISE_LOCKED: "1"
+    steps:
+      - name: Harden the runner
+        uses: step-security/harden-runner@ccd8616d44fd3846e67624a50d5aad6d37bf2d25 # v2.22.1
+        with:
+          egress-policy: audit
+
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up the toolchain
+        uses: jdx/mise-action@08ae2a091c038e1e05ec6f5115dc5c69d5a2a6b8 # v5.1.2
+        with:
+          # renovate: datasource=github-releases depName=jdx/mise
+          version: 2026.10.9
+
+      - name: Test
+        run: mise run test
+
+  # The tree scan in `lint` sees only the checkout. This reads every commit,
+  # message, and author line the pull request adds, so a value committed and
+  # removed again within the branch still fails. CI has no private literals,
+  # so this runs the publishable patterns only.
+  leaks:
+    name: leaks
+    runs-on: ubuntu-24.04
+    env:
+      MISE_LOCKED: "1"
+    steps:
+      - name: Harden the runner
+        uses: step-security/harden-runner@ccd8616d44fd3846e67624a50d5aad6d37bf2d25 # v2.22.1
+        with:
+          egress-policy: audit
+
+      # Full history: a shallow clone is refused as incomplete.
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Set up the toolchain
+        uses: jdx/mise-action@08ae2a091c038e1e05ec6f5115dc5c69d5a2a6b8 # v5.1.2
+        with:
+          # renovate: datasource=github-releases depName=jdx/mise
+          version: 2026.10.9
+
+      - name: Scan the pull request for leaks
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        # Scan source commits rather than GitHub's synthetic merge signature.
+        run: mise run --quiet devtools:lint-leaks -- --range "${BASE_SHA}..${HEAD_SHA}"

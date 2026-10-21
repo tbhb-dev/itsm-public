@@ -1,0 +1,22 @@
+---
+# Credential scan: the shared gitleaks workflow over the checkout. The other
+# quality gates live in ci.yml.
+
+name: security
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  gitleaks:
+    uses: tbhb-dev/devtools/.github/workflows/scan-gitleaks.yml@830abe6dadce3e0b4c7ab4c5065560d2c3c76ed9 # v0.14.0
