@@ -1,6 +1,7 @@
 .devtools/
-# Generated dependency locks from mise.
+# The mise directory: vendored conf.d and the generated locks.
 .config/mise/
+
 .claude/
 .agents/skills/
 .codex/

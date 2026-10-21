@@ -10,9 +10,9 @@ apm = "0.33.0"
 uv = "0.13.0"
 jq = "1.8.2"
 shfmt = "3.14.1"
-"go:github.com/tbhb-dev/devtools/cmd/guard-markdown" = "v0.14.0"
-"go:github.com/tbhb-dev/devtools/cmd/commit-lint" = "v0.14.0"
-"go:github.com/tbhb-dev/devtools/cmd/agentrepo" = "v0.14.0"
+"go:github.com/tbhb-dev/devtools/cmd/guard-markdown" = "v0.14.1"
+"go:github.com/tbhb-dev/devtools/cmd/commit-lint" = "v0.14.1"
+"go:github.com/tbhb-dev/devtools/cmd/agentrepo" = "v0.14.1"
 
 [env]
 DEVTOOLS_LOCK_PLATFORMS = "linux-x64,macos-arm64"
@@ -75,6 +75,7 @@ run = [
   "bash .claude/skills/pr/scripts/validate-description.sh",
   "vale --output=ai-tells-agent.tmpl PR_AGENTDESC.md",
   "cspell --config .cspell.jsonc --no-summary --no-progress PR_AGENTDESC.md",
+  "bash \"$DEVTOOLS_DIR/scripts/check-leaks.sh\" PR_AGENTDESC.md",
 ]
 
 [tasks.lint]
