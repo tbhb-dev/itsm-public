@@ -7,7 +7,7 @@ directories:
       - path: .
         git:
           url: https://github.com/tbhb-dev/devtools
-          ref: v0.14.1
+          ref: v0.14.2
         includePaths:
           - .config/mise/conf.d/**
         newRootPath: .config/mise/conf.d
@@ -16,7 +16,7 @@ directories:
       - path: .
         git:
           url: https://github.com/tbhb-dev/devtools
-          ref: v0.14.1
+          ref: v0.14.2
         includePaths:
           - .devtools/**
         newRootPath: .devtools

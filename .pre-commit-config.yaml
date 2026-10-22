@@ -15,7 +15,7 @@ default_stages: [pre-commit, pre-push]
 
 repos:
   - repo: https://github.com/tbhb-dev/devtools
-    rev: 63dcdd3b141ad79f7496b9fd36d0efcf4493b9a3  # frozen: v0.14.1
+    rev: f815d438e4253b8e773e2786e7bc3d71f1eb8719  # frozen: v0.14.2
     hooks:
       - id: guard-markdown
       - id: commit-trailers
