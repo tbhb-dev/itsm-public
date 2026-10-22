@@ -22,7 +22,7 @@ concurrency:
 
 jobs:
   lint:
-    uses: tbhb-dev/devtools/.github/workflows/consumer-lint.yml@63dcdd3b141ad79f7496b9fd36d0efcf4493b9a3 # v0.14.1
+    uses: tbhb-dev/devtools/.github/workflows/consumer-lint.yml@f815d438e4253b8e773e2786e7bc3d71f1eb8719 # v0.14.2
 
   test:
     name: test
