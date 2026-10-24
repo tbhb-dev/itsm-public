@@ -5,5 +5,5 @@ description: Agent tooling for itsm-public
 targets: [claude, codex]
 dependencies:
   apm:
-    - tbhb-dev/devtools#v0.15.0
+    - tbhb-dev/devtools#v0.18.0
   mcp: []
